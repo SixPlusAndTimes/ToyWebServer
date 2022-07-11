@@ -4,7 +4,11 @@
 //
 #include <iostream>
 #include "lock/lock.h"
+#include "pool/threadpool.h"
+#include "./epoll/epoller.h"
 #include <pthread.h>
+
+//#include <cstdlib>
 int a = 0;
 mutex mtx;
 cond mcond;
@@ -40,13 +44,18 @@ void * word_decrease(void *pVoid) {
     }
 }
 
-
+void add(int a, int b) {
+    printf("%d + %d = %d\n" , a , b, a + b );
+}
 int main() {
-    pthread_t  t1, t2;
-    pthread_create(&t1,NULL,work_increase, NULL);
-    pthread_create(&t1,NULL,word_decrease, NULL);
-    std::cout<<"main\n";
-    while(1) {
 
+    threadpool threadPool(8,8);
+//    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+    while(1){
+        bool ret = threadPool.append(std::bind(add, 1, 2)); 	// 向线程池中添加“任务”
+        if(ret == false) {
+//            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        }
     }
 }
