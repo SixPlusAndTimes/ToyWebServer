@@ -51,7 +51,7 @@ public:
     template<class T>
     bool append(T &&task) {
         threadPoolMutex.lock();
-        if(m_jobQueue.size() > 100) {//这里还是要限制以下，不然会爆内存
+        if(m_jobQueue.size() > 100) {//这里还是要限制一下，不然会爆内存
             threadPoolMutex.unlock();
             return false;
         }

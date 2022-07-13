@@ -9,15 +9,15 @@
 #include "./epoll/epoller.h"
 #include <pthread.h>
 #include "./webserver/webserver.h"
-
+#include "./buffer/buffer.h"
 //#include <cstdlib>
 int main(int argc, char *argv[])
 {
-    if (argc <= 1)
-    {
-        std::cout << "请按如下方式运行程序: ./" <<"portname\n";
-        exit(-1);
-    }
+//    if (argc <= 1)
+//    {
+//        std::cout << "请按如下方式运行程序: ./" <<"portname\n";
+//        exit(-1);
+//    }
     // 获取端口号
     int port = atoi(argv[1]); // atoi: convert string to int
     // 通过终端输入定时器定时时间
@@ -30,8 +30,12 @@ int main(int argc, char *argv[])
 //    else if(argc > 3){ triMode = atoi(argv[3]); }
 //    else if(argc > 2){ timeout = atoi(argv[2]); }
 //
-    Webserver server(port, triMode, threadNum, logLevel, timeout); // 一般设置 60s 的定时 ， why？
-    server.start();
-
+//    Webserver server(port, triMode, threadNum, logLevel, timeout); // 一般设置 60s 的定时 ， why？
+//    server.start();
+    std::cout << "tes";
+    Buffer b;
+    b.append("asdj");
+    b.append("asaca");
+    std::cout << b._all2str() << std::endl;
     return 0;
 }
