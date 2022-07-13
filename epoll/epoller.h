@@ -19,11 +19,11 @@ public:
     bool del(int fd, uint32_t ev);
 
     int getSocktFd(int i) const;
-    int getEventFd() const;
+    uint32_t getFdEvent(int i) const;
 private:
-    int m_epillFd;
-
-    std::vector<struct epoll_event> m_epEves;
+    int m_epollFd;//使用 epoll_create，打开的一个epoll文件描述符
+    int m_epollMaxEvents;//epoller能够监听的最大事件数目
+    std::vector<struct epoll_event> m_epEves; //epoll_wait返回时，将触发的事件存储在这个vector中
 };
 
 
