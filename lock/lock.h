@@ -11,9 +11,14 @@ class mutex
 {
 public:
     mutex() {
-        if(pthread_mutex_init(&m_mutex,NULL) != 0) {
+//        pthread_mutexattr_t attr;
+//        pthread_mutexattr_init(&attr);
+//        int pshared = PTHREAD_PROCESS_SHARED;
+//        pthread_mutexattr_setpshared(&attr,pshared);
+        if(pthread_mutex_init(&m_mutex, NULL) != 0) {
             throw std::runtime_error("pthread_init() failed");
         }
+//        printf("mutex init succeed.\n");
 
     }
     ~mutex() {
@@ -44,6 +49,7 @@ public:
         if(pthread_cond_init(&m_cond,NULL) != 0) {
             throw std::runtime_error("pthread_cond_init() failed!");
         }
+//        printf("cond init succeed.\n");
     }
 
     ~cond(){
@@ -51,6 +57,7 @@ public:
     }
 
     bool wait(pthread_mutex_t* mutex) {
+//        printf("cond::wait()\n");
         return pthread_cond_wait(&m_cond,mutex) == 0;
     }
 

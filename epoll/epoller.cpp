@@ -49,7 +49,7 @@ bool Epoller::add(int fd, uint32_t ev)
     return true;
 }
 
-bool Epoller::del(int fd, uint32_t ev)
+bool Epoller::del(int fd)
 {
     if (fd < 0)
     {

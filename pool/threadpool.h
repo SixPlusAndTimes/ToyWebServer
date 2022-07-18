@@ -17,7 +17,7 @@ class threadpool
 {
 public:
     threadpool( int t_Num, int queueNum):
-    threadNum(t_Num), m_stop(false){
+    threadNum(t_Num),jobQueueNum(queueNum) ,m_stop(false),threadPoolMutex(),threadPoolEmptyCond(){
         //创建t_Num个线程
         for(int i = 0; i < threadNum; i++) {
             //使用std::thread()创建线程，并执行lambda表达式里的内容
@@ -37,10 +37,9 @@ public:
                     m_jobQueue.pop();
 
                     threadPoolMutex.unlock();
+                    printf("one thread get the job\n");
                     todoTask();
                 }
-
-
             }).detach();
         }
     }
@@ -51,7 +50,8 @@ public:
     template<class T>
     bool append(T &&task) {
         threadPoolMutex.lock();
-        if(m_jobQueue.size() > 100) {//这里还是要限制一下，不然会爆内存
+//        printf("getlock\n" );
+        if(m_jobQueue.size() > jobQueueNum) {//这里还是要限制一下，不然会爆内存
             threadPoolMutex.unlock();
             return false;
         }
@@ -60,7 +60,8 @@ public:
         threadPoolMutex.unlock();
         return true;
     }
-
+    threadpool( const threadpool &) = delete;
+    threadpool &operator=(const threadpool &) = delete;
 private:
     int threadNum;
     int jobQueueNum;//感觉工作队列可以不限制大小，否则只能返回失败，或者阻塞 append的线程（这不可能，因为执行append的是主线程，不能将主线程阻塞）

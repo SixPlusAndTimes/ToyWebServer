@@ -16,7 +16,7 @@ public:
     int wait(int timeout = -1);
     bool add(int fd, uint32_t ev);
     bool mod(int fd, uint32_t ev);
-    bool del(int fd, uint32_t ev);
+    bool del(int fd);
 
     int getSocktFd(int i) const;
     uint32_t getFdEvent(int i) const;

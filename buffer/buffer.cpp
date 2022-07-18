@@ -159,6 +159,7 @@ ssize_t Buffer::recvFd(int sockfd, int *Errno)
     iov[1].iov_len = sizeof(extraBuf);
     // 调用readv
     ssize_t len = readv(sockfd, iov, 2);
+    printf("readv...\n");
     if(len < 0)
     {
         // 错误发生,设施错误号

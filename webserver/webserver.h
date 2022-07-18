@@ -13,6 +13,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <memory>
+#include <unordered_map>
+#include <sys/time.h>
+#include "../http/httpconnect.h"
+#include "../pool/threadpool.h"
 class Webserver
 {
 public:
@@ -26,13 +30,19 @@ private:
     bool initSocket();
     void initEventMode(int trigMode);
     void addClientConnect(int fd, struct sockaddr_in addr); // 添加一个连接
-//    void closeConn(Httpconnection *client);
-//    void delClient(Httpconnection *client);
+    void closeConn(Httpconnection *client);
+    void delClient(Httpconnection *client);
 
 
     void handleListen();
-//    bool handleWrite(Httpconnection *client);
-//    bool handleRead(Httpconnection *client);
+    bool handleWrite(Httpconnection *client);
+    bool handleRead(Httpconnection *client);
+
+    void onRead(Httpconnection *client);
+    void onWrite(Httpconnection *client);
+    void onProcess(Httpconnection *client);
+
+    void sendError(int fd, const char *info);
 
     static const int MAX_FD = 65535;
     static int setNONBLOCKING(int fd);
@@ -46,6 +56,8 @@ private:
     uint32_t m_connectFdEventFlag; //accept后的fd 的epoll flag
 
     std::unique_ptr<Epoller> m_epoller;
+    std::unique_ptr<threadpool> m_threadpool;
+    std::unordered_map<int, Httpconnection> m_usrs;
 };
 
 

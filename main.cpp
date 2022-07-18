@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include "./webserver/webserver.h"
 #include "./buffer/buffer.h"
+#include <unordered_map>
 //#include <cstdlib>
 int main(int argc, char *argv[])
 {
@@ -30,12 +31,21 @@ int main(int argc, char *argv[])
 //    else if(argc > 3){ triMode = atoi(argv[3]); }
 //    else if(argc > 2){ timeout = atoi(argv[2]); }
 //
-//    Webserver server(port, triMode, threadNum, logLevel, timeout); // 一般设置 60s 的定时 ， why？
-//    server.start();
-    std::cout << "tes";
-    Buffer b;
-    b.append("asdj");
-    b.append("asaca");
-    std::cout << b._all2str() << std::endl;
+    Webserver server(port, triMode, threadNum, logLevel, timeout); // 一般设置 60s 的定时 ， why？
+    server.start();
+
+//    std::unordered_map<int,Buffer> map;
+//    auto b =map[0];
+//    b._init();
+//    b.append("asd");
+//    std::cout << b._all2str();
+//    while(1);
+
+//    std::cout << "tes";
+//    Buffer b;
+//    b.append("asdj");
+//    b.append("asaca");
+//    b.append(std::string("aspo"));
+//    std::cout << b._all2str() << std::endl;
     return 0;
 }
