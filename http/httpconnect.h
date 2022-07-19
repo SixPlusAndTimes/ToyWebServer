@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <assert.h>
 #include <atomic> // std::atomic<int>
-//#include "httprequest.h"
+#include "httprequest.h"
 //#include "httpresponse.h"
 #include "../buffer/buffer.h"
 class Httpconnection {
@@ -80,7 +80,7 @@ private:
     Buffer httpReadBuf;
     Buffer httpWriteBuf;
 //
-//    Httprequest m_request;
+    Httprequest m_request;
 //    Httpresponse m_response;
 };
 

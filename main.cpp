@@ -11,6 +11,7 @@
 #include "./webserver/webserver.h"
 #include "./buffer/buffer.h"
 #include <unordered_map>
+#include <algorithm>
 //#include <cstdlib>
 int main(int argc, char *argv[])
 {
@@ -34,6 +35,14 @@ int main(int argc, char *argv[])
     Webserver server(port, triMode, threadNum, logLevel, timeout); // 一般设置 60s 的定时 ， why？
     server.start();
 
+//char buf[] = "\r\n";
+//char CRLF[] = "\r\n";
+//
+//char* lineEnd = std::search(buf,buf + 15, CRLF, CRLF + 2);
+//    std::cout<<"distance : "<< lineEnd - buf<<std::endl;
+//    std::string s(buf,lineEnd);
+//    std::cout<<"length = "<<s.length();
+//    std::cout << (int )*s.c_str() <<std::endl;
 //    std::unordered_map<int,Buffer> map;
 //    auto b =map[0];
 //    b._init();

@@ -63,8 +63,18 @@ ssize_t Httpconnection::readBuffer(int *saveErrno) {
     return sum;
 }
 
+//解析http请求，并向对端发送响应
 bool Httpconnection::handleHTTPConn() {
-    return false;
+    m_request._init();
+    if(httpReadBuf.readableBytes() <= 0)
+    {
+        return false;
+    }
+    bool ret = m_request.parse(httpReadBuf);
+    if(ret) {
+
+    }
+    return true;
 }
 
 const char *Httpconnection::getIP() const

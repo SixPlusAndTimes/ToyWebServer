@@ -252,6 +252,7 @@ bool Webserver::handleRead(Httpconnection *client) {
 void Webserver::onRead(Httpconnection *client) {
     onProcess(client);
 }
+//处理一个HTTP请求
 void Webserver::onProcess(Httpconnection *client) {
     printf("WebServer::onProcess()\n");
     if (client->handleHTTPConn())

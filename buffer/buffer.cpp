@@ -78,7 +78,7 @@ size_t Buffer::writeableBytes() const {
 }
 
 //返回缓冲区内可读取字节数
-inline
+
 size_t Buffer::readableBytes() const {
     return m_writePos - m_readPos;
 }
