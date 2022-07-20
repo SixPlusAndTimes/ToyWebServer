@@ -73,11 +73,11 @@ bool Httpconnection::handleHTTPConn() {
     }
     bool ret = m_request.parse(httpReadBuf);
     if(ret) {
-        std::cout << "parse request succeed . m_request::path = " << m_request.path() <<std::endl;
+//        std::cout << "parse request succeed . m_request::path = " << m_request.path() <<std::endl;
         m_response.init(srcDir,m_request.path(),m_request.isKeepAlive(),200);
     } else{
         //http 解析不成功
-        std::cout<<"in handleHTTPConn() :请求错误\n";
+//        std::cout<<"in handleHTTPConn() :请求错误\n";
         m_response.init(srcDir,m_request.path(),false,400);
     }
     ret = m_response.makeResponse(httpWriteBuf);
@@ -85,12 +85,12 @@ bool Httpconnection::handleHTTPConn() {
     m_iov[0].iov_base = const_cast<char *>(httpWriteBuf.curReadPtr());
     m_iov[0].iov_len = httpWriteBuf.readableBytes();
 
-    std::cout << "m_iov[0].iov_len = " << httpWriteBuf.readableBytes() << std::endl;
-    std::cout << "httpWriteBuf.curWritePtr = " << httpWriteBuf.curReadPtr() << std::endl;
+//    std::cout << "m_iov[0].iov_len = " << httpWriteBuf.readableBytes() << std::endl;
+//    std::cout << "httpWriteBuf.curWritePtr = " << httpWriteBuf.curReadPtr() << std::endl;
     if(m_response.fileLen() > 0 && m_response.file() )
     {
         //如果有文件要发送，则将文件装填在iov的第二个元素中
-        std::cout << "in handleHTTPConn() : 正在装填m_iov分散写结构体\n";
+//        std::cout << "in handleHTTPConn() : 正在装填m_iov分散写结构体\n";
         m_iov[1].iov_base = m_response.file();
         m_iov[1].iov_len = m_response.fileLen();
         m_iovCnt = 2;
@@ -100,7 +100,7 @@ bool Httpconnection::handleHTTPConn() {
 
 //将httpWriteBUffer中的数据通过socket发送给对方
 ssize_t Httpconnection::writeBuffer(int *saveErrno) {
-    printf("Httpconnection::writeBuffer(): [%d]_开始发送资源\n", m_fd);
+//    printf("Httpconnection::writeBuffer(): [%d]_开始发送资源\n", m_fd);
     ssize_t len = -1;
     ssize_t _writebytes = 0;
     do{
@@ -112,7 +112,7 @@ ssize_t Httpconnection::writeBuffer(int *saveErrno) {
         }
         if(m_iov[0].iov_len + m_iov[1].iov_len == 0)
         {
-            std::cout << "transmiting done !!\n";
+//            std::cout << "transmiting done !!\n";
             break;
         }
         else if(static_cast<size_t>(len) > m_iov->iov_len)
@@ -131,6 +131,7 @@ ssize_t Httpconnection::writeBuffer(int *saveErrno) {
         }
         _writebytes += len;
     }while(isET || writeBytes() > 10240); // writeBytes() > 10240 这是啥？？
+    return _writebytes;
 }
 const char *Httpconnection::getIP() const
 {
