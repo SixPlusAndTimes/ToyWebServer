@@ -16,4 +16,4 @@ clean:
 	cd bin; rm *
 
 run:
-	./bin/myserver 10000
+	cd ./bin ; ./myserver 10000

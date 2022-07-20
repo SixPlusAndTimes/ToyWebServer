@@ -342,7 +342,6 @@ bool Webserver::handleWrite(Httpconnection *client) {
     {
 
         if (client->isKeepAlive())
-//        if (true)
         {
             statusRecord = true;
             m_epoller->mod(client->getFd(), m_connectFdEventFlag | EPOLLIN);
