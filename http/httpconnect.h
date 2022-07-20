@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <atomic> // std::atomic<int>
 #include "httprequest.h"
-//#include "httpresponse.h"
+#include "httpresponse.h"
 #include "../buffer/buffer.h"
 class Httpconnection {
 public:
@@ -26,15 +26,16 @@ public:
      * */
     void initHTTPConn(int socketFd, const sockaddr_in &addr);
 
-    //每个连接中定义的对缓冲区的读写接口
+    //将socket中的数据读入readBuffer中
     ssize_t readBuffer(int *saveErrno);
 
+    //将httpWriteBUffer中的数据通过socket发送给对方
     ssize_t writeBuffer(int *saveErrno);
 
     //关闭HTTP连接的接口
     void closeHTTPConn();
 
-    //定义处理该HTTP连接的接口，主要分为request的解析和response的生成
+    //定义处理该HTTP连接的接口，解析readBuffer中的http请求，并生成响应，将响应的偏移地址写道 iov中
     bool handleHTTPConn();
 
     //其他方法
@@ -67,6 +68,8 @@ public:
     struct timeval m_eplW1;
     struct timeval m_eplW2;
 
+    void clearHttpReadBuffer();
+
 private:
     int m_fd; //对应的一个socket描述符，由accept产生的描述符
     struct sockaddr_in m_addr;
@@ -81,7 +84,7 @@ private:
     Buffer httpWriteBuf;
 //
     Httprequest m_request;
-//    Httpresponse m_response;
+    Httpresponse m_response;
 };
 
 #endif //TOYWEBVSERVER_HTTPCONNECT_H

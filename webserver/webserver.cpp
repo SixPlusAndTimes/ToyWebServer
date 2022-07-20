@@ -9,9 +9,15 @@
 Webserver::Webserver(int port, int triMode, int threadNum, int LogLevel, int timeOut)
         :m_port(port), m_timeoutMs(timeOut), m_isclose(false), m_epoller(new Epoller()), m_threadpool(new threadpool(8,100))
 {
-
+    getcwd(m_srcDir,sizeof(m_srcDir));
+    char* lastSlash =  strrchr(m_srcDir,'/');
+    *lastSlash = '\0';
+    strcat(m_srcDir,"/resources");
+    std::cout << "webserver's dir = " << m_srcDir <<std::endl;
+    Httpconnection::srcDir = m_srcDir;
+    Httpconnection::userCount = 0;
     initEventMode(triMode);//初始化触发模式
-    initSocket();
+    m_isclose = initSocket() == true ? false : true;
 }
 Webserver::~Webserver(){};
 // 对服务器程序进行初始化的函数
@@ -99,7 +105,7 @@ bool Webserver::initSocket()
     ret = m_epoller->add(m_listenFd, m_listenFdEventFlag | EPOLLIN);
     if (ret == 0)
     {
-//        LOG_ERROR("error epoll_add");
+       printf("error epoll_add\n");
         close(m_listenFd);
         return false;
     }
@@ -110,9 +116,9 @@ void Webserver::start()
 {
     if (!m_isclose)
     {
-        std::cout << "============================";
-        std::cout << "Server Start!";
-        std::cout << "============================";
+        std::cout << "============================\n";
+        std::cout << "Server Start!\n";
+        std::cout << "============================\n";
         std::cout << std::endl;
     }
     while (!m_isclose)
@@ -145,16 +151,19 @@ void Webserver::start()
             }
             else if (events & EPOLLIN)
             {
+                std::cout << "======================readEvent!=====================\n";
                 // 读事件  // 现在主线程中读取数据到缓冲区中；
                 // 再由线程池完成业务逻辑 // 读取http请求
                 handleRead(&m_usrs[currfd]);
-//                std::cout << "readEvent!\n";
+
             }
             else if (events & EPOLLOUT)
             {
                 // 写事件
-//                handleWrite(&m_usrs[currfd]);
-                std::cout << "writeEvent!\n";
+                std::cout << "======================writeEvent!=====================\n";
+                handleWrite(&m_usrs[currfd]);
+//                printf("handle return \n");
+
             }
             else
             {
@@ -249,16 +258,19 @@ bool Webserver::handleRead(Httpconnection *client) {
     return  true;
 }
 
+
 void Webserver::onRead(Httpconnection *client) {
     onProcess(client);
 }
-//处理一个HTTP请求
+//处理一个HTTP请求,所需的数据已经在httpReadBuffer中
 void Webserver::onProcess(Httpconnection *client) {
     printf("WebServer::onProcess()\n");
     if (client->handleHTTPConn())
     {
-        //处理http请求成功，将fd的事件改为写事件
+        //处理http请求成功，将fd的事件改为写事件；此时httpwriteBuff也已经填充了要发给客户端的数据
+        client->clearHttpReadBuffer();//清空httpreadbuffer
         m_epoller->mod(client->getFd(), m_connectFdEventFlag | EPOLLOUT);
+        std::cout << "================handleHttoConn succeed!now modify fd to epoll event=========" << std::endl;
     }
     else
     {
@@ -273,6 +285,7 @@ void Webserver::onProcess(Httpconnection *client) {
  * */
 void Webserver::closeConn(Httpconnection *client)
 {
+
     if (client == nullptr)
     {
 //        LOG_ERROR("invalid client ptr");
@@ -312,4 +325,58 @@ void Webserver::delClient(Httpconnection *client)
 //    int cnt = Httpconnection::userCount;
     // LOG_INFO("[%d]-%s:%d[OUT], usrCnt[%d]",
     //          client->getFd(), client->getIP(), client->getPort(), cnt);
+}
+
+/*调用httpClient::writeBuffer()函数
+ * 如果调用失败，根据不同的状况执行不同的善后操作
+ * */
+bool Webserver::handleWrite(Httpconnection *client) {
+    if(client == nullptr){
+        return false;
+    }
+    int erroNo = 0;
+    ssize_t ret = client->writeBuffer(&erroNo);
+//    printf(" in Webserver::handleWrite -- hclient->writeBuffer() return \n");
+    bool statusRecord = false;
+    if (ret > 0)
+    {
+
+        if (client->isKeepAlive())
+//        if (true)
+        {
+            statusRecord = true;
+            m_epoller->mod(client->getFd(), m_connectFdEventFlag | EPOLLIN);
+//            LOG_DEBUG("数据发送完成");
+        }
+        else
+        {
+            printf("[%d]数据发送长度大于0，但是客户端选择不保持连接\n",client->getFd());
+            closeConn(client);
+            statusRecord = false;
+        }
+    }
+    else if (client->writeBytes() == 0)
+    {
+        // 保存的客户端属性中，此时没有数据
+        if (client->isKeepAlive())
+//        if(true)
+        {
+            // 对于长连接，如果没有数据，那就重新更新一个客户端中数据
+            printf("发送的数据长度为0，重新进入到onProcess阶段\n");
+            onProcess(client);
+            statusRecord = true;
+        }
+        statusRecord = false;
+    }
+    else if (ret < 0)
+    {
+        if (erroNo == EAGAIN)
+        {
+            // LOG_DEBUG("发送的数据长度小于0，但是错误号为EAGAIN");
+            m_epoller->mod(client->getFd(), m_connectFdEventFlag | EPOLLOUT);
+            statusRecord = true;
+        }
+        statusRecord = false;
+    }
+    return statusRecord;
 }

@@ -73,7 +73,7 @@ private:
     void JsonParse(std::string &str);
     PARSE_STATE m_state;
     std::string m_method, m_path, m_version, m_body;
-    int m_content_length;
+//    int m_content_length;
 
 //    // 首部字段的哈希表
     std::unordered_map<std::string, std::string> m_header;

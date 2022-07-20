@@ -27,7 +27,6 @@ const std::unordered_set<std::string> Httprequest::DEFAULT_HTML{
 Httprequest::Httprequest() { _init(); }
 
 void Httprequest::_init() {
-    m_content_length = 0;
     m_method = m_path = m_version = "";
     m_state = PARSE_STATE::REQUEST_LINE;
     m_header.clear();
@@ -44,12 +43,17 @@ bool Httprequest::parse(Buffer &buff) {
     }
     while(buff.readableBytes() && m_state != PARSE_STATE::FINISH) {
         //lineEnd 指向 buff中第一个出现的'\r\n'的\r,如果没有\r\n 就返回buff.curWritePtr()
+//        std::string test(buff.curReadPtr(), buff.curWritePtr());
+//        printf("-------- test  test content  --------\n");
+//        std::cout << test <<std::endl;
+//        printf("-------- test  test content  --------\n");
         const char *lineEnd = std::search(buff.curReadPtr(), buff.curWritePtr(), CRLF, CRLF + 2);
         std::string line(buff.curReadPtr(),lineEnd);
         switch (m_state) {
             case PARSE_STATE::REQUEST_LINE:
                 if(!_parseRequestLine(line))
                 {
+                    std::cout<<"_parseRequestLine 错误！";
                     return false;
                 }
                 //请求行解析成功，将 m_path改成本服务器资源的绝对路径
@@ -87,7 +91,11 @@ bool Httprequest::_parseRequestLine(const std::string &line) {
     char* requestLine = const_cast<char *>(line.c_str());
     //找url的开头
     char* url = strpbrk(requestLine," \t");
-    if(! url) return false;
+    if(! url) {
+        std::cout << "in _parseRequestLine(), url unkonw!\n ";
+        return false;
+
+    }
     *url++ = '\0';
 
     //解析method
@@ -97,11 +105,15 @@ bool Httprequest::_parseRequestLine(const std::string &line) {
     } else if(strcasecmp(method,"POST") == 0) {
         m_method = "POST";
     } else {
+        std::cout << "in _parseRequestLine(), method unkonw!\n";
         return false;
     }
     //找版本号开头,并解析版本号
     char* version = strpbrk( url, " \t" );
-    if(!version) {return false;}
+    if(!version) {
+        std::cout << "in _parseRequestLine(), version unkonw!\n";
+        return false;
+    }
     *version++ = '\0';
     m_version = std::string(version);
 

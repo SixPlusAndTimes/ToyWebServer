@@ -20,7 +20,7 @@ void Buffer::_init()
 {
     bzero(bufStartPtr, getBufSize());
     m_readPos = 0;
-    m_readPos = 0;
+    m_writePos = 0;
 }
 
 //返回buffer的字节大小

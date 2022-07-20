@@ -51,6 +51,8 @@ private:
     int m_timeoutMs;
     int m_listenFd;
     bool m_isclose;//服务器关闭标志
+//    bool m_openLinger;
+    char m_srcDir[108];
 
     uint32_t m_listenFdEventFlag;//listen()中fd的epoll flag
     uint32_t m_connectFdEventFlag; //accept后的fd 的epoll flag
