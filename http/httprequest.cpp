@@ -35,10 +35,10 @@ void Httprequest::_init() {
 
 /*解析请求报文*/
 bool Httprequest::parse(Buffer &buff) {
-    printf("in Httprequest::parse(Buffer &buff)\n");
+//    printf("in Httprequest::parse(Buffer &buff)\n");
     const char CRLF[] = "\r\n";
     if(buff.readableBytes() <= 0 ) {
-        printf("empty buff\n");
+        printf("Httprequest::parse() : empty buff\n");
         return false;
     }
     while(buff.readableBytes() && m_state != PARSE_STATE::FINISH) {
@@ -122,7 +122,7 @@ bool Httprequest::_parseRequestLine(const std::string &line) {
     //改变状态机状态
     m_state = PARSE_STATE::HEADERS;
 
-    printf("m_method:%s, m_path:%s, m_version:%s\n", m_method.c_str(), m_path.c_str(), m_version.c_str());
+//    printf("m_method:%s, m_path:%s, m_version:%s\n", m_method.c_str(), m_path.c_str(), m_version.c_str());
     return true;
 }
 
@@ -165,7 +165,7 @@ void Httprequest::_parseRequestHeader(const std::string &line) {
     *tokenIndex = '\0';
     tokenIndex += 2;
     m_header[std::string(requestLine)] = std::string(tokenIndex);
-    printf("header=%s:%s\n", std::string(requestLine).c_str(), m_header[std::string(requestLine)].c_str());
+//    printf("header=%s:%s\n", std::string(requestLine).c_str(), m_header[std::string(requestLine)].c_str());
 }
 
 void Httprequest::_parseDataBody(const std::string &line) {
@@ -202,7 +202,7 @@ bool Httprequest::isKeepAlive() const
 //         printf("<<<< Connection:%s, version:%s\n", m_header.find("Connection")->second.c_str(), m_version.c_str());
         std::string connection = m_header.find("Connection")->second;
         if(m_version == "HTTP/1.1" && (connection == "keep-alive" || connection == "Keep-Alive") ){
-            std::cout << "in Httprequest::isKeepAlive() :  yes keep alive\n";
+//            std::cout << "in Httprequest::isKeepAlive() :  yes keep alive\n";
             return true;
         }
         std::cout << "in Httprequest::isKeepAlive() :  NOT  keep alive\n";
