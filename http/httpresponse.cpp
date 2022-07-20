@@ -70,7 +70,7 @@ void Httpresponse::init(const std::string srcDir, const std::string path, bool i
     mmFileState = {0};
     std::cout << "srcdir = " << srcDir << std::endl;
     std::cout << "m_code = " << m_code << std::endl;
-    std::cout << "m_keepalive ? = " << m_keepalive << std::endl;
+    std::cout << "m_keepalive  = " << m_keepalive << std::endl;
     std::cout << "m_path  = " << m_path << std::endl;
     std::cout << "=====Httpresponse::init() done\n";
 

@@ -163,7 +163,7 @@ void Httprequest::_parseRequestHeader(const std::string &line) {
         tokenIndex++;
     }
     *tokenIndex = '\0';
-    tokenIndex++;
+    tokenIndex += 2;
     m_header[std::string(requestLine)] = std::string(tokenIndex);
     printf("header=%s:%s\n", std::string(requestLine).c_str(), m_header[std::string(requestLine)].c_str());
 }
@@ -199,11 +199,15 @@ bool Httprequest::isKeepAlive() const
 {
     if (m_header.count("Connection") > 0)
     {
-        // LOG_DEBUG("Connection:%s, version:%s", m_header.find("Connection")->second.c_str(), m_version.c_str())
+//         printf("<<<< Connection:%s, version:%s\n", m_header.find("Connection")->second.c_str(), m_version.c_str());
         std::string connection = m_header.find("Connection")->second;
         if(m_version == "HTTP/1.1" && (connection == "keep-alive" || connection == "Keep-Alive") ){
+            std::cout << "in Httprequest::isKeepAlive() :  yes keep alive\n";
             return true;
         }
+        std::cout << "in Httprequest::isKeepAlive() :  NOT  keep alive\n";
+    }else {
+        std::cout << "in Httprequest::isKeepAlive() : no Connection found\n";
     }
     return false;
 }
