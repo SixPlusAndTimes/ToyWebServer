@@ -52,7 +52,7 @@ Httpresponse::~Httpresponse()
 }
 
 void Httpresponse::init(const std::string srcDir, const std::string path, bool isKeepAlive, int code) {
-    std::cout << "=====Httpresponse::init()...\n";
+//    std::cout << "=====Httpresponse::init()...\n";
     if(srcDir == "")
     {
         std::cout<<"invalid srcdir!\n";
@@ -68,11 +68,11 @@ void Httpresponse::init(const std::string srcDir, const std::string path, bool i
     m_srcDir = srcDir;
     m_mmfile = nullptr;
     mmFileState = {0};
-    std::cout << "srcdir = " << srcDir << std::endl;
-    std::cout << "m_code = " << m_code << std::endl;
-    std::cout << "m_keepalive  = " << m_keepalive << std::endl;
-    std::cout << "m_path  = " << m_path << std::endl;
-    std::cout << "=====Httpresponse::init() done\n";
+//    std::cout << "srcdir = " << srcDir << std::endl;
+//    std::cout << "m_code = " << m_code << std::endl;
+//    std::cout << "m_keepalive  = " << m_keepalive << std::endl;
+//    std::cout << "m_path  = " << m_path << std::endl;
+//    std::cout << "=====Httpresponse::init() done\n";
 
 }
 
@@ -102,7 +102,7 @@ bool Httpresponse::makeResponse(Buffer &buffer) {
     addContent(buffer);//使用mmap将文件内容映射至内存，将文件在内存的位置存储在m_mmfile中，把文件大小存储在mmFileState中
 //    std::cout << ">>>>> buffer : \n";
 //    std::cout << buffer._all2str() << std::endl; // 注意 buffer._all2str()清空 buffer 的可读数据，debug时要小心
-    std::cout << "buffer readable byte : "<< buffer.readableBytes()<<std::endl;
+//    std::cout << "buffer readable byte : "<< buffer.readableBytes()<<std::endl;
     return m_code == 200 ? true : false;
 }
 
@@ -121,7 +121,7 @@ void Httpresponse::addStateLine(Buffer &buffer)
     }
     // 把响应的字段写入到缓冲区中
     buffer.append("HTTP/1.1 " + std::to_string(m_code) + " " + status + "\r\n");
-    std::cout << "afer append stateline line the readablebytes = " << buffer.readableBytes()<<std::endl;
+//    std::cout << "afer append stateline line the readablebytes = " << buffer.readableBytes()<<std::endl;
 }
 
 void Httpresponse::addHeader(Buffer &buffer)
@@ -143,7 +143,7 @@ void Httpresponse::addHeader(Buffer &buffer)
         //http格式规定的 ： https://blog.csdn.net/abcnull/article/details/84787954
     buffer.append("Content-length: " + std::to_string(mmFileState.st_size) + "\r\n\r\n");
 
-    std::cout << "afer append the header readable bytes = " << buffer.readableBytes()<<std::endl;
+//    std::cout << "afer append the header readable bytes = " << buffer.readableBytes()<<std::endl;
 }
 
 //将（一般是文件内容），加到buffer中
