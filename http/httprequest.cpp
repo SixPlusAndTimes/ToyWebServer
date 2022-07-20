@@ -206,8 +206,6 @@ bool Httprequest::isKeepAlive() const
             return true;
         }
         std::cout << "in Httprequest::isKeepAlive() :  NOT  keep alive\n";
-    }else {
-        std::cout << "in Httprequest::isKeepAlive() : no Connection found\n";
     }
     return false;
 }
