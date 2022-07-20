@@ -140,18 +140,18 @@ void Webserver::start()
             // 判断事件类型：新连接到来？读？写？
             if (currfd == m_listenFd)
             {
-                std::cout << "New connection comming\n";
+//                std::cout << "New connection comming\n";
                 handleListen(); // 处理新连接
             }
             else if (events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
             {
                 // 对端关闭了连接
                 closeConn(&m_usrs[currfd]);
-                std::cout << "Opposite End Socket Close!!\n";
+//                std::cout << "Opposite End Socket Close!!\n";
             }
             else if (events & EPOLLIN)
             {
-                std::cout << "======================readEvent!=====================\n";
+//                std::cout << "======================readEvent!=====================\n";
                 // 读事件  // 现在主线程中读取数据到缓冲区中；
                 // 再由线程池完成业务逻辑 // 读取http请求
                 handleRead(&m_usrs[currfd]);
@@ -160,7 +160,7 @@ void Webserver::start()
             else if (events & EPOLLOUT)
             {
                 // 写事件
-                std::cout << "======================writeEvent!=====================\n";
+//                std::cout << "======================writeEvent!=====================\n";
                 handleWrite(&m_usrs[currfd]);
 //                printf("handle return \n");
 
@@ -184,7 +184,7 @@ void Webserver::handleListen()
     {
 //        struct timeval t1;
 //        gettimeofday(&t1, NULL);
-        std::cout << "handling listen...\n";
+//        std::cout << "handling listen...\n";
         int cfd = accept(m_listenFd, (struct sockaddr *)&caddr, &len);
         if (cfd < 0)
         {
@@ -251,7 +251,7 @@ bool Webserver::handleRead(Httpconnection *client) {
     struct timeval t2;
     gettimeofday(&t2, NULL);
     long tt = (t2.tv_sec-t1.tv_sec)*1000000 + (t2.tv_usec-t1.tv_usec);
-    printf("clientfd = %d, 数据读取完成，耗时： %d\n", client->getFd(), tt);
+//    printf("clientfd = %d, 数据读取完成，耗时： %d\n", client->getFd(), tt);
     // 把业务处理逻辑代码交给线程池去处理
 
     m_threadpool->append(std::bind(&Webserver::onRead, this, client));
@@ -264,13 +264,13 @@ void Webserver::onRead(Httpconnection *client) {
 }
 //处理一个HTTP请求,所需的数据已经在httpReadBuffer中
 void Webserver::onProcess(Httpconnection *client) {
-    printf("WebServer::onProcess()\n");
+//    printf("WebServer::onProcess()\n");
     if (client->handleHTTPConn())
     {
         //处理http请求成功，将fd的事件改为写事件；此时httpwriteBuff也已经填充了要发给客户端的数据
         client->clearHttpReadBuffer();//清空httpreadbuffer
         m_epoller->mod(client->getFd(), m_connectFdEventFlag | EPOLLOUT);
-        std::cout << "================handleHttoConn succeed!now modify fd to epoll event=========" << std::endl;
+//        std::cout << "================handleHttoConn succeed!now modify fd to epoll event=========" << std::endl;
     }
     else
     {
@@ -349,7 +349,7 @@ bool Webserver::handleWrite(Httpconnection *client) {
         }
         else
         {
-            printf("[%d]数据发送长度大于0，但是客户端选择不保持连接\n",client->getFd());
+//            printf("[%d]数据发送长度大于0，但是客户端选择不保持连接\n",client->getFd());
             closeConn(client);
             statusRecord = false;
         }
@@ -361,7 +361,7 @@ bool Webserver::handleWrite(Httpconnection *client) {
 //        if(true)
         {
             // 对于长连接，如果没有数据，那就重新更新一个客户端中数据
-            printf("发送的数据长度为0，重新进入到onProcess阶段\n");
+//            printf("发送的数据长度为0，重新进入到onProcess阶段\n");
             onProcess(client);
             statusRecord = true;
         }
