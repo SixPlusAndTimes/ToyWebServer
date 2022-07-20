@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++11 -O1 -Wall -g
+CXXFLAGS=-std=c++11 -O2 -Wall -g
 BUILD_DIR = ./bin
 TARGET:=./bin/myserver
 
