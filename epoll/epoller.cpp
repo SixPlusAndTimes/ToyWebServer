@@ -30,7 +30,7 @@ int Epoller::wait(int timeout) {
     //为什么&m_epEves不行，必须&m_epEves[0]
     //std::vector 可能和数组不太一样
     int nums = epoll_wait(m_epollFd, &m_epEves[0],m_epollMaxEvents,timeout);//timeout默认为-1，即epollwait将一致阻塞
-    std::cout << "timeWait return \n";
+//    std::cout << "timeWait return \n";
     return nums;
 }
 /*fd: socket描述符
@@ -45,7 +45,7 @@ bool Epoller::add(int fd, uint32_t ev)
     event.events = ev;
     event.data.fd = fd;
     epoll_ctl(m_epollFd,EPOLL_CTL_ADD, fd,&event);
-    std::cout << "add an fd\n";
+//    std::cout << "add an fd\n";
     return true;
 }
 

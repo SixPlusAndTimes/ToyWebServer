@@ -42,7 +42,7 @@ void Buffer::append(const char *str, size_t len) {
     //printf("function:Buffer::append(const char *str, size_t len)\n");
     if (str == nullptr)
     {
-        printf("error:invalid str\n");
+//        printf("error:invalid str\n");
         return;
     }
     //确保缓冲区能够存放这么多的数据,否则由ensureWtriteble函数扩容
@@ -65,7 +65,7 @@ void Buffer::append(const void *data, size_t len) {
     if (data == nullptr)
     {
 //        LOG_ERROR("error:invalid str");
-        printf("error:invalid str\n");
+//        printf("error:invalid str\n");
         return;
     }
     append((const char*) data, len);
@@ -88,12 +88,12 @@ void Buffer::ensureWriteable(size_t len) {
     // buffer的剩余可写空间
     size_t leftSapce = getBufSize() - m_writePos;
     if(leftSapce < len) {
-        std::cout << "缓冲区扩容\n";
+//        std::cout << "缓冲区扩容\n";
         allocateSpace(len);
     }
     leftSapce = getBufSize() - m_writePos;
     if(leftSapce < len) {
-        std::cout<<"扩容失败\n";
+//        std::cout<<"扩容失败\n";
     }
 }
 
@@ -159,7 +159,7 @@ ssize_t Buffer::recvFd(int sockfd, int *Errno)
     iov[1].iov_len = sizeof(extraBuf);
     // 调用readv
     ssize_t len = readv(sockfd, iov, 2);
-    printf("readv...\n");
+//    printf("readv...\n");
     if(len < 0)
     {
         // 错误发生,设施错误号

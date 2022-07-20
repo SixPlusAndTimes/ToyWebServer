@@ -31,7 +31,7 @@ void Httpconnection::closeHTTPConn()
         isClose = true;
         userCount--;
         close(m_fd);
-        printf("in httpconnect::closeHttpConn  close client fd\n");
+//        printf("in httpconnect::closeHttpConn  close client fd\n");
         m_fd = -1;
 //        LOG_INFO("[%d]_%s:%d[OUT], usrCnt[%d]",
 //                 getFd(), getIP(), getPort(), (int)Httpconnection::userCount);
@@ -48,12 +48,12 @@ void Httpconnection::initHTTPConn(int socketFd, const sockaddr_in &addr)
     httpReadBuf._init();
     httpWriteBuf._init();
     isClose = false; // 连接中
-    printf("http Conected , IP : %s  , PORT : %d",getIP(),getPort() );
+//    printf("http Conected , IP : %s  , PORT : %d",getIP(),getPort() );
 }
 
 //将示例对应的fd缓冲区的内容读到自己的m_readBuf中
 ssize_t Httpconnection::readBuffer(int *saveErrno) {
-    printf("Httpconnection::readBuffer() begin...\n");
+//    printf("Httpconnection::readBuffer() begin...\n");
     ssize_t len = 0;
     ssize_t sum = 0;
     do {
