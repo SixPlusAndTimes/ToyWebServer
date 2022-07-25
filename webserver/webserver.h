@@ -17,6 +17,7 @@
 #include <sys/time.h>
 #include "../http/httpconnect.h"
 #include "../pool/threadpool.h"
+#include "../log/log.h"
 class Webserver
 {
 public:

@@ -12,7 +12,11 @@
 #include "./buffer/buffer.h"
 #include <unordered_map>
 #include <algorithm>
+#include "./log/log.h"
 //#include <cstdlib>
+int p(char* a) {
+    return  0;
+}
 int main(int argc, char *argv[])
 {
 //    if (argc <= 1)
@@ -24,9 +28,9 @@ int main(int argc, char *argv[])
     int port = atoi(argv[1]); // atoi: convert string to int
     // 通过终端输入定时器定时时间
     int timeout = -1;
-    int triMode = 1;
+    int triMode = 1; // lt(listenFd) & et(connectedFd)
     int threadNum = 8;
-    int logLevel = 1;
+    int logLevel = 3;
 //    if(argc > 5){ logLevel = atoi(argv[5]); }
 //    else if(argc > 4){ threadNum = atoi(argv[4]); }
 //    else if(argc > 3){ triMode = atoi(argv[3]); }
@@ -35,26 +39,25 @@ int main(int argc, char *argv[])
     Webserver server(port, triMode, threadNum, logLevel, timeout); // 一般设置 60s 的定时 ， why？
     server.start();
 
-//char buf[] = "\r\n";
-//char CRLF[] = "\r\n";
+    //test tmie
+    // current date/time based on current system
+//    time_t now = time(0);
 //
-//char* lineEnd = std::search(buf,buf + 15, CRLF, CRLF + 2);
-//    std::cout<<"distance : "<< lineEnd - buf<<std::endl;
-//    std::string s(buf,lineEnd);
-//    std::cout<<"length = "<<s.length();
-//    std::cout << (int )*s.c_str() <<std::endl;
-//    std::unordered_map<int,Buffer> map;
-//    auto b =map[0];
-//    b._init();
-//    b.append("asd");
-//    std::cout << b._all2str();
-//    while(1);
-
-//    std::cout << "tes";
-//    Buffer b;
-//    b.append("asdj");
-//    b.append("asaca");
-//    b.append(std::string("aspo"));
-//    std::cout << b._all2str() << std::endl;
+//    std::cout << "Number of sec since January 1,1970 is:: " << now << std::endl;
+//
+//    tm *ltm = localtime(&now);
+//
+//    // print various components of tm structure.
+//    std::cout << "Year:" << 1900 + ltm->tm_year<<std::endl;
+//    std::cout << "Month: "<< 1 + ltm->tm_mon<< std::endl;
+//    std::cout << "Day: "<< ltm->tm_mday << std::endl;
+//    std::cout << "Time: "<< ltm->tm_hour << ":";
+//    std::cout << ltm->tm_min << ":";
+//    std::cout << ltm->tm_sec << std::endl;
+//    std::queue<std::string> _bufferA;
+//    _bufferA.push("sasd");
+//    _bufferA.push("sasd");
+//    _bufferA.push("sasd");
+//    printf("bufferA size = %d",_bufferA.size());
     return 0;
 }

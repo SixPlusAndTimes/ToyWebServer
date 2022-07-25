@@ -4,9 +4,10 @@
 
 
 #include "webserver.h"
+
 #include<iostream>
 
-Webserver::Webserver(int port, int triMode, int threadNum, int LogLevel, int timeOut)
+Webserver::Webserver(int port, int triMode, int threadNum, int logLevel, int timeOut)
         :m_port(port), m_timeoutMs(timeOut), m_isclose(false), m_epoller(new Epoller()), m_threadpool(new threadpool(8,100))
 {
     getcwd(m_srcDir,sizeof(m_srcDir));
@@ -16,8 +17,13 @@ Webserver::Webserver(int port, int triMode, int threadNum, int LogLevel, int tim
     std::cout << "webserver's dir = " << m_srcDir <<std::endl;
     Httpconnection::srcDir = m_srcDir;
     Httpconnection::userCount = 0;
+
     initEventMode(triMode);//初始化触发模式
     m_isclose = initSocket() == true ? false : true;
+
+    Log::getInstance()->setLevel(logLevel);
+
+    LOG_DEBUG("logLeve = %d",logLevel);
 }
 Webserver::~Webserver(){};
 // 对服务器程序进行初始化的函数
@@ -116,10 +122,18 @@ void Webserver::start()
 {
     if (!m_isclose)
     {
-        std::cout << "============================\n";
-        std::cout << "Server Start!\n";
-        std::cout << "============================\n";
-        std::cout << std::endl;
+//        std::cout << "============================\n";
+//        std::cout << "Server Start!\n";
+//        std::cout << "============================\n";
+//        std::cout << std::endl;
+
+        LOG_INFO("\n==== Server Start ====\n\
+                    listenEvent: %s, connectEvent: %s\n\
+                    timer set: %d ms, log level: %s\n\
+                    resources: [%s]",
+                 m_listenFdEventFlag & EPOLLET ? "ET" : "LT",
+                 m_connectFdEventFlag & EPOLLET ? "ET" : "LT",
+                 m_timeoutMs, Log::getInstance()->getLevel().c_str(), m_srcDir);
     }
     while (!m_isclose)
     {
