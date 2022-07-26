@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
 //    else if(argc > 3){ triMode = atoi(argv[3]); }
 //    else if(argc > 2){ timeout = atoi(argv[2]); }
 //
-    Webserver server(config.port, config.trig_mode, config.thread_num, config.log_level, config.time_out); // 一般设置 60s 的定时 ， why？
+
+    Webserver server(config.port, config.trig_mode, config.thread_num, config.log_level, config.time_out);
     server.start();
 
     return 0;

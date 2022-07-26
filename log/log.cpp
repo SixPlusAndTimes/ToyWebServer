@@ -21,7 +21,7 @@ Log::Log() {
     //准备日志文件名
     char filePath[64] = {0};
     snprintf(filePath,sizeof filePath,"./log_file/%d_%02d_%02d_%02d:%02d:%02d.log",
-             1900 + ltm->tm_year,ltm->tm_mon,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
+             1900 + ltm->tm_year,ltm->tm_mon + 1,ltm->tm_mday,ltm->tm_hour,ltm->tm_min,ltm->tm_sec);
     open_file_ = fopen(filePath,"w");
 
     if(open_file_ == nullptr)

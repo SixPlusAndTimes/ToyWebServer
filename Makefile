@@ -3,7 +3,7 @@ CXXFLAGS=-std=c++11 -O2 -Wall -g
 BUILD_DIR = ./bin
 TARGET:=./bin/myserver
 
-SOURCE= main.cpp ./pool/threadpool.h ./lock/* ./epoll/epoller.cpp ./webserver/webserver.cpp ./buffer/buffer.cpp ./http/*.cpp ./log/log.cpp ./config/config.cpp
+SOURCE= main.cpp ./pool/threadpool.h ./lock/* ./epoll/epoller.cpp ./webserver/webserver.cpp ./buffer/buffer.cpp ./http/*.cpp ./log/log.cpp ./config/config.cpp ./timer/timer.cpp
 
 $(TARGET):$(SOURCE)
 	$(CXX) $(CXXFLAGS)  $(SOURCE) -o $(TARGET) -pthread

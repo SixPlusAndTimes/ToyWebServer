@@ -18,6 +18,7 @@
 #include "../http/httpconnect.h"
 #include "../pool/threadpool.h"
 #include "../log/log.h"
+#include "../timer/timer.h"
 class Webserver
 {
 public:
@@ -49,7 +50,9 @@ private:
     static int setNONBLOCKING(int fd);
 
     int m_port;
-    int m_timeoutMs;
+    int m_timeoutMs; //超时时间 ： 单位m s
+    std::unique_ptr<TimerManager> m_timer_manager;//定时器管理
+
     int m_listenFd;
     bool m_isclose;//服务器关闭标志
 //    bool m_openLinger;

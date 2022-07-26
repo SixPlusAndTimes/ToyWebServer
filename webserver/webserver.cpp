@@ -8,7 +8,7 @@
 #include<iostream>
 
 Webserver::Webserver(int port, int triMode, int threadNum, int logLevel, int timeOut)
-        :m_port(port), m_timeoutMs(timeOut), m_isclose(false), m_epoller(new Epoller()), m_threadpool(new threadpool(8,100))
+        :m_port(port), m_timeoutMs(timeOut), m_timer_manager(new TimerManager()),m_isclose(false), m_epoller(new Epoller()), m_threadpool(new threadpool(8,100))
 {
     getcwd(m_srcDir,sizeof(m_srcDir));
     char* lastSlash =  strrchr(m_srcDir,'/');
@@ -26,6 +26,7 @@ Webserver::Webserver(int port, int triMode, int threadNum, int logLevel, int tim
     LOG_DEBUG("logLeve = %d",logLevel);
 }
 Webserver::~Webserver(){};
+
 // 对服务器程序进行初始化的函数
 /*注意 ： epoll事件默认为LT
  * trigMode = 1 ：  只有m_connectFdEventFlag为ET
@@ -134,14 +135,25 @@ void Webserver::start()
                  m_listenFdEventFlag & EPOLLET ? "ET" : "LT",
                  m_connectFdEventFlag & EPOLLET ? "ET" : "LT",
                  m_timeoutMs, Log::getInstance()->getLevel().c_str(), m_srcDir);
+
+        printf("\n==== Server Start ====\n\
+                    listenEvent: %s, connectEvent: %s\n\
+                    timer set: %d ms, log level: %s\n\
+                    resources: [%s]",
+                 m_listenFdEventFlag & EPOLLET ? "ET" : "LT",
+                 m_connectFdEventFlag & EPOLLET ? "ET" : "LT",
+                 m_timeoutMs, Log::getInstance()->getLevel().c_str(), m_srcDir);
     }
     while (!m_isclose)
     {
         int waitTime = -1;
-//        if (m_timeoutMs > 0)
-//        {
-//            waitTime = m_timer->getNextHandle();
-//        }
+        if (m_timeoutMs > 0)
+        {
+            //第一次为 -1
+            waitTime = m_timer_manager->getNextHandle();
+            LOG_DEBUG("waitTime = %d",waitTime);
+//            std::cout << waitTime <<std::endl;
+        }
         // 调用epoll监听
         int eventCnt = m_epoller->wait(waitTime);
         for (int i = 0; i < eventCnt; ++i)
@@ -154,6 +166,7 @@ void Webserver::start()
             // 判断事件类型：新连接到来？读？写？
             if (currfd == m_listenFd)
             {
+                LOG_DEBUG("NewConnectionComming");
 //                std::cout << "New connection comming\n";
                 handleListen(); // 处理新连接
             }
@@ -161,7 +174,7 @@ void Webserver::start()
             {
                 // 对端关闭了连接
                 closeConn(&m_usrs[currfd]);
-//                std::cout << "Opposite End Socket Close!!\n";
+                std::cout << "Opposite End Socket Close!!\n";
             }
             else if (events & EPOLLIN)
             {
@@ -229,7 +242,10 @@ void Webserver::addClientConnect(int fd, struct sockaddr_in addr) {
     m_epoller->add(fd,m_connectFdEventFlag | EPOLLIN);
 
     //超时逻辑处理
-
+    if (m_timeoutMs > 0)
+    {
+        m_timer_manager->addTimer(fd, m_timeoutMs, std::bind(&Webserver::delClient, this, &m_usrs[fd]));
+    }
     //将fd设置为非阻塞
     setNONBLOCKING(fd);
 }
@@ -258,10 +274,10 @@ bool Webserver::handleRead(Httpconnection *client) {
         return false;
     }
     // 更新一下定时器
-//    if (m_timeoutMs > 0)
-//    {
-//        m_timer->updateTimer(client->getFd(), m_timeoutMs);
-//    }
+    if (m_timeoutMs > 0)
+    {
+        m_timer_manager->updateTimer(client->getFd(), m_timeoutMs);
+    }
     struct timeval t2;
     gettimeofday(&t2, NULL);
     long tt = (t2.tv_sec-t1.tv_sec)*1000000 + (t2.tv_usec-t1.tv_usec);
@@ -311,7 +327,7 @@ void Webserver::closeConn(Httpconnection *client)
     }
     if (m_timeoutMs > 0)
     {
-//        m_timer->delFd(client->getFd());
+        m_timer_manager->delFd(client->getFd());
     }
     client->closeHTTPConn();
 }
@@ -350,6 +366,11 @@ bool Webserver::handleWrite(Httpconnection *client) {
     }
     int erroNo = 0;
     ssize_t ret = client->writeBuffer(&erroNo);
+    // 更新定时器
+    if (m_timeoutMs > 0)
+    {
+        m_timer_manager->updateTimer(client->getFd(), m_timeoutMs);
+    }
 //    printf(" in Webserver::handleWrite -- hclient->writeBuffer() return \n");
     bool statusRecord = false;
     if (ret > 0)
