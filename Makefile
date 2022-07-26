@@ -20,3 +20,6 @@ clean:
 
 run:
 	cd ./bin ; ./myserver
+
+runlog2timeout2s:
+	cd ./bin; ./myserver -l 2 -o 2000

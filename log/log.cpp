@@ -65,7 +65,7 @@ void Log::writeMsg(int level, const char *filename, const char *func, int line, 
         char date[30] = {0};
         getDate(date);
         msg.append(date);
-        msg.append(" " + std::to_string(gettid()) + " ");
+        // msg.append(" " + std::to_string(gettid()) + " ");
 
         msg.append("@ ");
         msg.append(filename);
