@@ -28,11 +28,11 @@ public:
     Timer(int fd, const _timeStamp expire, const _timeoutCallBack& func): so_fd_(fd), expire_(expire), timeout_callback_(func) {}
     ~Timer() = default;
     bool operator<(const Timer &t) {
-        return expire_ > t.expire_;
+        return expire_ < t.expire_;
     }
 
     bool operator>(const Timer &t) {
-        return expire_ < t.expire_;
+        return expire_ > t.expire_;
     }
 
     Timer &operator=(const Timer &t)

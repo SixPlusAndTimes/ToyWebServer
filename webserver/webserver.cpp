@@ -150,8 +150,9 @@ void Webserver::start()
         if (m_timeoutMs > 0)
         {
             //第一次为 -1
+//            printf("in start() if branch , to get waitTime\n");
             waitTime = m_timer_manager->getNextHandle();
-            LOG_DEBUG("waitTime = %d",waitTime);
+//            printf("waitTime = %d\n",waitTime);
 //            std::cout << waitTime <<std::endl;
         }
         // 调用epoll监听
@@ -174,7 +175,8 @@ void Webserver::start()
             {
                 // 对端关闭了连接
                 closeConn(&m_usrs[currfd]);
-                std::cout << "Opposite End Socket Close!!\n";
+                LOG_INFO("Opposite End Socket Close!!\n");
+//                std::cout << "Opposite End Socket Close!!\n";
             }
             else if (events & EPOLLIN)
             {
@@ -244,7 +246,9 @@ void Webserver::addClientConnect(int fd, struct sockaddr_in addr) {
     //超时逻辑处理
     if (m_timeoutMs > 0)
     {
+//        std::cout << "addTimer ...\n";
         m_timer_manager->addTimer(fd, m_timeoutMs, std::bind(&Webserver::delClient, this, &m_usrs[fd]));
+//        std::cout << "addTimer done\n";
     }
     //将fd设置为非阻塞
     setNONBLOCKING(fd);

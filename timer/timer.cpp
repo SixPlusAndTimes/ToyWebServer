@@ -38,22 +38,28 @@ void TimerManager::swapNode(int i, int j)
 //    heap_mutex_.lock();
 }
 void TimerManager::swim(int index) {
-    if(index < 0) {
+    if(index < 0 || index >= static_cast<int>(heap_.size()) ) {
         LOG_DEBUG("invalid index of heap");
     }
 
     if(index == 0) return;
     int parent_index = (index - 1) / 2;
+//    std::cout <<"parent index = "<< parent_index <<std::endl;
+//    std::cout << "heap[parent_index] = " << heap_[parent_index].expire_.time_since_epoch().count() <<std::endl;
+//    std::cout << "heap[index] = " << heap_[index].expire_.time_since_epoch().count() <<std::endl;
+//    std::cout << (heap_[parent_index] < heap_[index]) << std::endl;
+
     while(parent_index >= 0) {
         if(heap_[parent_index] < heap_[index]) {
             //如果 父节点的过期时间小于新的节点的过期时间，那么就说明此时整棵树已维持了最小对的性质
+//            std::cout << "heap_[parent_index] < heap_[index]" <<std::endl;
             break;
         }
         //交换父子节点
         swapNode(index, parent_index);
         //重复交换的过程
         index = parent_index;
-        parent_index = (parent_index - 1) / 2;
+        parent_index = (index - 1) / 2;
     }
 }
 
@@ -128,15 +134,27 @@ void TimerManager::addTimer(int fd, int timeout, const _timeoutCallBack &func) {
     if(fd_id_map_.count(fd) == 0) {
         //如果加入的是新的Timer，即fd是新的
         //这一步保证树是完全二叉树
+//        std::cout << "no exits fd: " << fd << std::endl;
         index_in_heap = heap_.size();
 
         fd_id_map_[fd] = index_in_heap;
 
         heap_.push_back(Timer(fd, _clock::now() + _ms(timeout), func));
-
+//        std::cout<<" index in heap = " << index_in_heap << std::endl;
         swim(index_in_heap);//插入后跟新最小堆
+
+//        std::cout << "fd_id_map : \n";
+//        for(auto elem : fd_id_map_) {
+//            std::cout << "\tfd = " << elem.first << ": index = " <<elem.second <<std::endl;
+//        }
+//        std::cout << "heap : \n";
+//        for(auto ele : heap_) {
+//            std::cout << ele.expire_.time_since_epoch().count() << "  ";
+//        }
+//        std::cout << "\n";
     }else {
         //如果heap中已经存在了这个timer对应的fd
+//        std::cout << "has exits fd: " << fd << std::endl;
         index_in_heap = fd_id_map_[fd];
         heap_[index_in_heap].expire_ = _clock ::now() + _ms(timeout);
         heap_[index_in_heap].timeout_callback_ = func;

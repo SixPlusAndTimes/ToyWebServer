@@ -1,6 +1,7 @@
 //
 // Created by 19269 on 2022/7/11.
 //
+#include "../log/log.h"
 /*
  * epoll 系统调用相关
    struct epoll_event {
@@ -26,11 +27,13 @@ Epoller::Epoller(int maxEventNums)
     : m_epollFd(epoll_create(1)),m_epollMaxEvents(maxEventNums),m_epEves(maxEventNums) {}
 
 int Epoller::wait(int timeout) {
+    LOG_DEBUG("timeWaiting");
 //    std::cout << "timeWait...\n";
     //为什么&m_epEves不行，必须&m_epEves[0]
     //std::vector 可能和数组不太一样
     int nums = epoll_wait(m_epollFd, &m_epEves[0],m_epollMaxEvents,timeout);//timeout默认为-1，即epollwait将一致阻塞
 //    std::cout << "timeWait return \n";
+    LOG_DEBUG("timeWait return ");
     return nums;
 }
 /*fd: socket描述符
