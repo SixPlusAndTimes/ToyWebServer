@@ -147,14 +147,14 @@ void Webserver::start()
     while (!m_isclose)
     {
         int waitTime = -1;
-//        if (m_timeoutMs > 0)
-//        {
-//            //第一次为 -1
-////            printf("in start() if branch , to get waitTime\n");
-//            waitTime = m_timer_manager->getNextHandle();
-////            printf("waitTime = %d\n",waitTime);
-////            std::cout << waitTime <<std::endl;
-//        }
+       if (m_timeoutMs > 0)
+       {
+           //第一次为 -1
+//            printf("in start() if branch , to get waitTime\n");
+           waitTime = m_timer_manager->getNextHandle();
+//            printf("waitTime = %d\n",waitTime);
+//            std::cout << waitTime <<std::endl;
+       }
         // 调用epoll监听
         int eventCnt = m_epoller->wait(waitTime);
         for (int i = 0; i < eventCnt; ++i)
@@ -245,11 +245,11 @@ void Webserver::addClientConnect(int fd, struct sockaddr_in addr) {
 
     //超时逻辑处理
     if (m_timeoutMs > 0)
-//    {
-////        std::cout << "addTimer ...\n";
-//        m_timer_manager->addTimer(fd, m_timeoutMs, std::bind(&Webserver::delClient, this, &m_usrs[fd]));
-////        std::cout << "addTimer done\n";
-//    }
+   {
+//        std::cout << "addTimer ...\n";
+       m_timer_manager->addTimer(fd, m_timeoutMs, std::bind(&Webserver::delClient, this, &m_usrs[fd]));
+//        std::cout << "addTimer done\n";
+   }
     //将fd设置为非阻塞
     setNONBLOCKING(fd);
 }
@@ -278,10 +278,10 @@ bool Webserver::handleRead(Httpconnection *client) {
         return false;
     }
     // 更新一下定时器
-//    if (m_timeoutMs > 0)
-//    {
-//        m_timer_manager->updateTimer(client->getFd(), m_timeoutMs);
-//    }
+   if (m_timeoutMs > 0)
+   {
+       m_timer_manager->updateTimer(client->getFd(), m_timeoutMs);
+   }
     struct timeval t2;
     gettimeofday(&t2, NULL);
     long tt = (t2.tv_sec-t1.tv_sec)*1000000 + (t2.tv_usec-t1.tv_usec);
@@ -329,10 +329,10 @@ void Webserver::closeConn(Httpconnection *client)
     {
         printf("%s:%d epoll_del failed\n", client->getIP(), client->getPort());
     }
-//    if (m_timeoutMs > 0)
-//    {
-//        m_timer_manager->delFd(client->getFd());
-//    }
+   if (m_timeoutMs > 0)
+   {
+       m_timer_manager->delFd(client->getFd());
+   }
     client->closeHTTPConn();
 }
 
@@ -371,10 +371,10 @@ bool Webserver::handleWrite(Httpconnection *client) {
     int erroNo = 0;
     ssize_t ret = client->writeBuffer(&erroNo);
     // 更新定时器
-//    if (m_timeoutMs > 0)
-//    {
-//        m_timer_manager->updateTimer(client->getFd(), m_timeoutMs);
-//    }
+   if (m_timeoutMs > 0)
+   {
+       m_timer_manager->updateTimer(client->getFd(), m_timeoutMs);
+   }
 //    printf(" in Webserver::handleWrite -- hclient->writeBuffer() return \n");
     bool statusRecord = false;
     if (ret > 0)
