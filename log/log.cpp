@@ -166,7 +166,7 @@ void Log::logThreadFunc1(int num)
 {
    while (true)
    {
-    //    sleep(1);
+        sleep(1);
         writeToFile();
    }
 }

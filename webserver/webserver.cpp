@@ -18,7 +18,7 @@ Webserver::Webserver(int port, int triMode, int threadNum, int logLevel, int tim
     Httpconnection::srcDir = m_srcDir;
     Httpconnection::userCount = 0;
 
-    initEventMode(triMode);//初始化触发模式
+    initEventMode(triMode);
     m_isclose = initSocket() == true ? false : true;
 
    Log::getInstance()->setLevel(logLevel);
@@ -38,10 +38,7 @@ void Webserver::initEventMode(int trigMode)
 {
     // EPOLLRDHUP：当对端关闭socket时触发的事件
     m_listenFdEventFlag = EPOLLRDHUP;
-    /* EPOLLONESHOT 和 ET模式不尽相同：
-    前者是防止一个客户端发送的数据被多个线程分散读取；
-    后者是避免多次调用epoll_wait提高epoll效率的一种模式
-    */
+
     m_connectFdEventFlag = EPOLLRDHUP | EPOLLONESHOT;
     switch (trigMode)
     {
@@ -62,10 +59,7 @@ void Webserver::initEventMode(int trigMode)
     Httpconnection::isET = m_connectFdEventFlag & EPOLLET;
 }
 
-/*
- * 1. 创建listen_fd
- * 2.
- * */
+
 bool Webserver::initSocket()
 {
     m_listenFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -77,14 +71,13 @@ bool Webserver::initSocket()
     struct sockaddr_in saddr;
     //初始化结构体addr
     saddr.sin_family = AF_INET;
-    // inet_pton(AF_INET, "10.0.12.8", (void *)&saddr.sin_addr.s_addr);
     saddr.sin_addr.s_addr = htonl(INADDR_ANY);
     saddr.sin_port = htons(m_port);
     int reuse = 1;
     int ret = setsockopt(m_listenFd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     if (ret < 0)
     {
-//        LOG_ERROR("error setsockopt");
+       LOG_ERROR(" setsockopt error");
         close(m_listenFd);
         return false;
     }
@@ -92,7 +85,7 @@ bool Webserver::initSocket()
     ret = bind(m_listenFd, (struct sockaddr *)&saddr, 16);
     if (ret < 0)
     {
-//        LOG_ERROR("error bind");
+       LOG_ERROR("error binding");
         close(m_listenFd);
         return false;
     }
@@ -104,7 +97,7 @@ bool Webserver::initSocket()
     ret = listen(m_listenFd, 100);
     if (ret < 0)
     {
-//        LOG_ERROR("error listen")
+       LOG_ERROR("error listen");
         close(m_listenFd);
         return false;
     }
@@ -112,7 +105,7 @@ bool Webserver::initSocket()
     ret = m_epoller->add(m_listenFd, m_listenFdEventFlag | EPOLLIN);
     if (ret == 0)
     {
-       printf("error epoll_add\n");
+       LOG_ERROR("error epoll_add\n");
         close(m_listenFd);
         return false;
     }
@@ -138,19 +131,17 @@ void Webserver::start()
 
         printf("\n==== Server Start ====\n\
                     listenEvent: %s, connectEvent: %s\n\
-                    timer set: %d ms, log level: %d\n\
+                    timer set: %d ms, log level: %s\n\
                     resources: [%s]",
                  m_listenFdEventFlag & EPOLLET ? "ET" : "LT",
                  m_connectFdEventFlag & EPOLLET ? "ET" : "LT",
-                 m_timeoutMs, 2, m_srcDir);
+                 m_timeoutMs, Log::getInstance()->getLevel().c_str(), m_srcDir);
     }
     while (!m_isclose)
     {
         int waitTime = -1;
        if (m_timeoutMs > 0)
        {
-           //第一次为 -1
-//            printf("in start() if branch , to get waitTime\n");
            waitTime = m_timer_manager->getNextHandle();
 //            printf("waitTime = %d\n",waitTime);
 //            std::cout << waitTime <<std::endl;
@@ -164,7 +155,6 @@ void Webserver::start()
             // 获取fd对应的event
             uint32_t events = m_epoller->getFdEvent(i);
 
-            // 判断事件类型：新连接到来？读？写？
             if (currfd == m_listenFd)
             {
                LOG_DEBUG("NewConnectionComming");
@@ -175,8 +165,7 @@ void Webserver::start()
             {
                 // 对端关闭了连接
                 closeConn(&m_usrs[currfd]);
-//                LOG_INFO("Opposite End Socket Close!!\n");
-//                std::cout << "Opposite End Socket Close!!\n";
+               LOG_INFO("Opposite End Socket Close!!\n");
             }
             else if (events & EPOLLIN)
             {
