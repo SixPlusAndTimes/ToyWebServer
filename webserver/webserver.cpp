@@ -21,9 +21,9 @@ Webserver::Webserver(int port, int triMode, int threadNum, int logLevel, int tim
     initEventMode(triMode);//初始化触发模式
     m_isclose = initSocket() == true ? false : true;
 
-    Log::getInstance()->setLevel(logLevel);
+//    Log::getInstance()->setLevel(logLevel);
 
-    LOG_DEBUG("logLeve = %d",logLevel);
+//    LOG_DEBUG("logLeve = %d",logLevel);
 }
 Webserver::~Webserver(){};
 
@@ -128,21 +128,21 @@ void Webserver::start()
 //        std::cout << "============================\n";
 //        std::cout << std::endl;
 
-        LOG_INFO("\n==== Server Start ====\n\
-                    listenEvent: %s, connectEvent: %s\n\
-                    timer set: %d ms, log level: %s\n\
-                    resources: [%s]",
-                 m_listenFdEventFlag & EPOLLET ? "ET" : "LT",
-                 m_connectFdEventFlag & EPOLLET ? "ET" : "LT",
-                 m_timeoutMs, Log::getInstance()->getLevel().c_str(), m_srcDir);
+//        LOG_INFO("\n==== Server Start ====\n\
+//                    listenEvent: %s, connectEvent: %s\n\
+//                    timer set: %d ms, log level: %s\n\
+//                    resources: [%s]",
+//                 m_listenFdEventFlag & EPOLLET ? "ET" : "LT",
+//                 m_connectFdEventFlag & EPOLLET ? "ET" : "LT",
+//                 m_timeoutMs, Log::getInstance()->getLevel().c_str(), m_srcDir);
 
         printf("\n==== Server Start ====\n\
                     listenEvent: %s, connectEvent: %s\n\
-                    timer set: %d ms, log level: %s\n\
+                    timer set: %d ms, log level: %d\n\
                     resources: [%s]",
                  m_listenFdEventFlag & EPOLLET ? "ET" : "LT",
                  m_connectFdEventFlag & EPOLLET ? "ET" : "LT",
-                 m_timeoutMs, Log::getInstance()->getLevel().c_str(), m_srcDir);
+                 m_timeoutMs, 2, m_srcDir);
     }
     while (!m_isclose)
     {
@@ -167,7 +167,7 @@ void Webserver::start()
             // 判断事件类型：新连接到来？读？写？
             if (currfd == m_listenFd)
             {
-                LOG_DEBUG("NewConnectionComming");
+//                LOG_DEBUG("NewConnectionComming");
 //                std::cout << "New connection comming\n";
                 handleListen(); // 处理新连接
             }
@@ -175,7 +175,7 @@ void Webserver::start()
             {
                 // 对端关闭了连接
                 closeConn(&m_usrs[currfd]);
-                LOG_INFO("Opposite End Socket Close!!\n");
+//                LOG_INFO("Opposite End Socket Close!!\n");
 //                std::cout << "Opposite End Socket Close!!\n";
             }
             else if (events & EPOLLIN)
