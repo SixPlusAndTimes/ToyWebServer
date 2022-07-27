@@ -22,4 +22,4 @@ run:
 	cd ./bin ; ./myserver
 
 runlog2timeout2s:
-	cd ./bin; ./myserver -l 2 -o 2000
+	cd ./bin;  ./myserver -p 10000 -m 1 -s 1 -t 8 -l 2 -o 2000
