@@ -139,7 +139,7 @@ void Log::getDate(char *date)
             lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday, (lt->tm_hour + 8) % 24, lt->tm_min, lt->tm_sec, pt.tv_usec);
 }
 
-//单消费者模型;消费者线程等待fill信号，并发信号给empty
+//消费者线程等待fill信号，并发信号给empty
 void Log::writeToFile() {
     queue_mtx_.lock();
     while(buffer_queue_.empty()) {
@@ -164,10 +164,9 @@ void Log::writeToFile() {
 // 日志线程的工作函数
 void Log::logThreadFunc1(int num)
 {
-//    while (true)
-//    {
-//        sleep(3);
-//        std::cout << "log thread" << num << "executing"<<std::endl;
+   while (true)
+   {
+    //    sleep(1);
         writeToFile();
-//    }
+   }
 }

@@ -21,9 +21,9 @@ Webserver::Webserver(int port, int triMode, int threadNum, int logLevel, int tim
     initEventMode(triMode);//初始化触发模式
     m_isclose = initSocket() == true ? false : true;
 
-//    Log::getInstance()->setLevel(logLevel);
+   Log::getInstance()->setLevel(logLevel);
 
-//    LOG_DEBUG("logLeve = %d",logLevel);
+   LOG_DEBUG("logLeve = %d",logLevel);
 }
 Webserver::~Webserver(){};
 
@@ -128,13 +128,13 @@ void Webserver::start()
 //        std::cout << "============================\n";
 //        std::cout << std::endl;
 
-//        LOG_INFO("\n==== Server Start ====\n\
-//                    listenEvent: %s, connectEvent: %s\n\
-//                    timer set: %d ms, log level: %s\n\
-//                    resources: [%s]",
-//                 m_listenFdEventFlag & EPOLLET ? "ET" : "LT",
-//                 m_connectFdEventFlag & EPOLLET ? "ET" : "LT",
-//                 m_timeoutMs, Log::getInstance()->getLevel().c_str(), m_srcDir);
+       LOG_INFO("\n==== Server Start ====\n\
+                   listenEvent: %s, connectEvent: %s\n\
+                   timer set: %d ms, log level: %s\n\
+                   resources: [%s]",
+                m_listenFdEventFlag & EPOLLET ? "ET" : "LT",
+                m_connectFdEventFlag & EPOLLET ? "ET" : "LT",
+                m_timeoutMs, Log::getInstance()->getLevel().c_str(), m_srcDir);
 
         printf("\n==== Server Start ====\n\
                     listenEvent: %s, connectEvent: %s\n\
@@ -167,7 +167,7 @@ void Webserver::start()
             // 判断事件类型：新连接到来？读？写？
             if (currfd == m_listenFd)
             {
-//                LOG_DEBUG("NewConnectionComming");
+               LOG_DEBUG("NewConnectionComming");
 //                std::cout << "New connection comming\n";
                 handleListen(); // 处理新连接
             }
@@ -304,7 +304,8 @@ void Webserver::onProcess(Httpconnection *client) {
         //处理http请求成功，将fd的事件改为写事件；此时httpwriteBuff也已经填充了要发给客户端的数据
         client->clearHttpReadBuffer();//清空httpreadbuffer
         m_epoller->mod(client->getFd(), m_connectFdEventFlag | EPOLLOUT);
-//        std::cout << "================handleHttoConn succeed!now modify fd to epoll event=========" << std::endl;
+        LOG_INFO("================handleHttoConn succeed!now modify fd to epoll event=========");
+    //    std::cout << "================handleHttoConn succeed!now modify fd to epoll event=========" << std::endl;
     }
     else
     {
