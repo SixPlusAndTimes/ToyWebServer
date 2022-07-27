@@ -7,12 +7,7 @@
 #include "pool/threadpool.h"
 #include "./epoll/epoller.h"
 #include "./webserver/webserver.h"
-#include "./buffer/buffer.h"
-#include <algorithm>
 #include "./config/config.h"
-int p(char* a) {
-    return  0;
-}
 int main(int argc, char *argv[])
 {
 //    if (argc <= 1)
